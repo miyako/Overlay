@@ -1,8 +1,11 @@
 # Overlay
 
-`cs.Overlay.Overlay.new(target : Text)` launches the bundled standalone
-`overlay-cli` C++ executable. This is a CLI-backed component, not a 4D plug-in.
-Use `"macOS-universal"` on macOS and explicitly `"Windows-x64"` on Windows.
+`cs.Overlay.Overlay.new()` selects the bundled universal macOS helper without
+a target argument. The optional `target : Text` accepts `"macOS-universal"`
+on macOS; the released 0.1.0 API requires `.new("Windows-x64")` on Windows.
+An omitted Windows target returns `unsupported_architecture` on execution;
+native Windows ARM64 is unsupported. This is a CLI-backed component launching
+the standalone `overlay-cli` executable, not a 4D plug-in.
 The host namespace is `Overlay`; component-internal code uses `cs.Overlay`.
 
 ## Metadata
@@ -24,11 +27,14 @@ Screen coordinates follow the native CLI's desktop coordinate system, not
 ```4d
 var $overlay : cs.Overlay.Overlay
 var $handle : cs.Overlay.OverlayHandle
-$overlay:=cs.Overlay.Overlay.new("macOS-universal")
+$overlay:=cs.Overlay.Overlay.new()
 $handle:=$overlay.show(New object("image"; File("/DATA/overlay.png"); \
     "x"; 100; "y"; 100; "mode"; "clickable"; "timeoutMs"; 5000); \
     Formula(My_overlay_completed($1)))
 ```
+
+The example uses the macOS default; on Windows construct with
+`cs.Overlay.Overlay.new("Windows-x64")` instead.
 
 `show(options : Object; callback : Object) : cs.Overlay.OverlayHandle` returns
 immediately after queueing an isolated worker invocation. It does **not** call

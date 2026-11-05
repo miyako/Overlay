@@ -53,18 +53,13 @@ above describe manual installation, not a tested dependency-manager workflow.
 
 Put a suitable `overlay.png` on the desktop. Run this from a form method or
 button in a desktop host. Keep the API and returned handle in `Form` so another
-button can cancel the invocation:
+button can cancel the invocation. This example uses the released macOS default:
 
 ```4d
-var $target : Text
 var $png : 4D.File
 var $options; $callback : Object
 
-$target:="macOS-universal"
-If (Is Windows)
-    $target:="Windows-x64"
-End if
-Form.overlay:=cs.Overlay.Overlay.new($target)
+Form.overlay:=cs.Overlay.Overlay.new()
 $png:=Folder(fk desktop folder).file("overlay.png")
 $options:=New object("image"; $png; "x"; 100; "y"; 100; "mode"; "clickable")
 $options.timeoutMs:=5000
@@ -72,6 +67,14 @@ $options.fadeInMs:=150
 $options.fadeOutMs:=150
 $callback:=Formula(CALL WORKER(1; Formula(Overlay_completed($1)); $1))
 Form.overlayHandle:=Form.overlay.show($options; $callback)
+```
+
+On macOS no target argument is needed: the component selects its bundled
+universal helper. In the released 0.1.0 API, Windows still requires the explicit
+x64 selection; replace only the constructor line with:
+
+```4d
+Form.overlay:=cs.Overlay.Overlay.new("Windows-x64")
 ```
 
 Create the host project method **`Overlay_completed`**:
