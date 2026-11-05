@@ -1,207 +1,208 @@
 # Overlay
 
-A **CLI-backed 4D component** for modeless PNG tooltips and image overlays outside
-4D form boundaries. Host API: `cs.Overlay.Overlay`. The bundled `overlay-cli`
-runs a native event loop in a separate process: AppKit/ImageIO on macOS and
-Win32 layered windows/WIC on Windows. C++17 and Objective-C++; no browser, GUI
-toolkit dependency, 4D SDK plug-in, runtime download or third-party image decoder.
+A 4D component for **modeless PNG tooltips and clickable image overlays outside
+form boundaries**. The public API is `cs.Overlay.Overlay`. A bundled native
+helper draws the image in a separate process; no 4D plug-in or browser is needed.
+Display calls are asynchronous and return a cancellable handle.
 
-**Development preview, not release ready.** A native build is not proof of
-cross-application click-through, native Windows execution or compiled component
-loading. See [local evidence](#local-evidence-and-remaining-gates).
+**[0.1.0 prerelease](https://github.com/miyako/Overlay/releases/tag/0.1.0):
+unsigned, unnotarized, and not production ready.** Transparent-hole delivery to
+other applications and several platform/GUI behaviors still require verification.
 
-## Behavior
+## Install
 
-| Mode | Input and focus |
-| --- | --- |
-| `passive` | All pixels pass input through; never activates or takes keyboard focus. Suitable for a tooltip. |
-| `clickable` | Visible image pixels accept a click, returning top-left window-local coordinates. Fully transparent pixels must pass through to underlying applications; this behavior requires native desktop verification. Escape dismisses only when the overlay has keyboard focus. |
-
-Both modes are **modeless**. `modal:true` / `--modal true` fails with
-`unsupported_modal`; waiting for a helper is not application or 4D modality.
-Outside-click dismissal, global event hooks, accessibility permissions, event
-injection and native SVG are not implemented. Rasterize SVG to PNG in 4D first.
-
-One helper owns one overlay. A display timeout is optional, not a fixed 30-second
-process timeout. Cancellation and host lifetime monitoring prevent intentionally
-unbounded windows from being the only lifecycle mechanism. No GUI thread calls
-4D: events travel through the process protocol and 4D callbacks.
-
-## 4D API
-
-The public feature and asynchronous handle contracts, including worker/callback
-lifetime and Blob input, are documented in
-[Overlay](component/Overlay/Documentation/Classes/Overlay.md).
-The generic synchronous [_Process](component/Overlay/Documentation/Classes/_Process.md)
-adapter remains available for bounded metadata commands; displaying an overlay
-must use the asynchronous feature API, not `.execute().wait()`.
-
-The source host fixture includes `Overlay_demo`, an explicitly invoked manual
-example. Do not start interactive fixtures on an unattended/shared desktop.
-The host namespace `Overlay` has no conflicting namespace in this repository;
-uniqueness among a host's other components is the integrator's responsibility.
-
-## Native CLI protocol
-
-UTF-8 JSON, protocol 1, compact JSON plus LF. A normal completed `show` emits
-**exactly one** terminal stdout record and exits zero:
-
-```json
-{"protocol":1,"outcome":"accepted","reason":"click","x":42,"y":18}
-```
-
-Dismissal is `{protocol:1,outcome:"dismissed",reason:"timeout"}` (or `escape`,
-`cancel`, `host-exit`, and the documented screen-change reason), with **no**
-fabricated coordinates. OS-enforced termination cannot promise a terminal
-record: the 4D facade distinguishes cancellation from successful protocol
-completion and preserves output/status. Stderr is separate from stdout;
-nonempty stderr alone is not failure. Validation/runtime failures have nonzero
-status, empty stdout and structured stderr:
-
-```json
-{"protocol":1,"error":{"code":"unsupported_modal","message":"..."}}
-```
-
-No stdout diagnostic logging. Completion is serialized by the native event loop;
-once finished, subsequent timeout/click/cancel events cannot emit another record.
-
-| Command | Result |
-| --- | --- |
-| `overlay-cli --version` | `{"protocol":1,"version":"0.1.0"}` + LF |
-| `overlay-cli capabilities` | `{"protocol":1,"modal":false,"format":"png","modes":["passive","clickable"]}` + LF |
-| `overlay-cli screens` | Current native displays, coordinate rectangles and units |
-| `overlay-cli validate --image PATH ...` | Decode/check the actual PNG and placement without displaying a window |
-| `overlay-cli show --image PATH ...` | Display PNG and emit terminal outcome after completion |
-| `overlay-cli show --stdin ...` | Read binary PNG on stdin to EOF, then display; not UTF-8 image conversion |
-
-Common options: `--x`, `--y`, `--mode passive|clickable`, `--screen`,
-`--scale`, `--opacity`, `--timeout-ms`, `--fade-in-ms`, `--fade-out-ms`,
-`--host-pid`, `--modal true|false`. Options are separate tokens, not
-`--option=value`; unknown, duplicate, unsupported, missing and conflicting
-options fail. Binary PNG stdin is an intentional alternative to `--image`,
-never inferred from an arbitrary `-` argument. Input has encoded-byte and read
-deadline bounds; dimensions/pixel allocation are checked before full decode.
-Empty, malformed and fully transparent images fail; interactive opacity zero
-fails. Timings, numeric ranges and scaling are bounded; NaN/Infinity and
-out-of-range values fail before any window is shown.
-
-macOS uses points, with the origin at the top-left of the main display and Y
-increasing down. Windows uses physical virtual-desktop pixels with explicit
-per-monitor DPI awareness and the primary-display top-left origin. Negative
-coordinates are valid for secondary displays. `--screen` restricts placement
-validation to that display; it does **not** change the global coordinate origin.
-Use `screens` to convert a screen-local location to global coordinates.
-Exact limits and cancellation details are in the
-[native protocol reference](cli/README.md). Placement validates actual nonzero-alpha image
-coverage against connected displays, not just an invisible bounding rectangle.
-Scaling preserves image aspect ratio. Click coordinates refer to the displayed
-window in the platform units, with top-left origin, not source PNG pixels.
-
-On macOS clickable mode creates up to 512 native coverage-rectangle panels, so
-alpha-zero holes have **no window** over them; it does not rely on a view
-returning `nil` from `hitTest`. Highly fragmented clickable images fail
-`image_complexity` rather than creating unbounded native windows. Windows uses
-per-pixel layered-window alpha without blanket clickable `WS_EX_TRANSPARENT`.
-Mixed-DPI edge rounding and real cross-process delivery remain manual gates.
-
-## Source layout and dependencies
+1. Download [Overlay.zip](https://github.com/miyako/Overlay/releases/download/0.1.0/Overlay.zip),
+   not GitHub's source archive. The release includes a checksum and public
+   acceptance summary.
+2. Quit the host database. Extract the ZIP and place the entire
+   `Overlay.4dbase` folder in the host database's `Components/` folder, creating
+   that folder if necessary.
+3. Reopen the host database. Keep `Overlay.4DZ`, `Resources/`, and `Libraries/`
+   together inside `Overlay.4dbase`; do not install the helper separately.
 
 ```text
-cli/                              shared C++17 protocol, platform GUI backends
-component/Overlay/Project/         real Overlay.4DProject
-component/Overlay/Documentation/   API and execution contracts
-component/Overlay/Resources/bin/   assembled universal macOS / Windows x64 helper
-tests/host/                       namespaced source/compiled host and manual demo
-tests/cli-contract.json            deterministic native smoke vectors
-scripts/                          provenance, build, real 4D compiler and packer
+YourDatabase/
+  Components/
+    Overlay.4dbase/
+      Overlay.4DZ
+      Resources/
+      Libraries/
+  Project/
+    YourDatabase.4DProject
 ```
 
-Uses system AppKit/CoreGraphics/ImageIO and Windows User32/GDI/OLE/WIC.
-No bundled tool4d. Preserve [MIT](LICENSE) and
-[redistribution notices](component/Overlay/Resources/licenses/).
-The C++ runtime/compiler are supplied by Xcode/MSVC; Windows uses the static
-MSVC CRT, whose redistribution terms must be reviewed for the release toolchain.
-Hosted runner/toolchain patch versions are not immutable pins. CI uses Python
-3.12 and platform Xcode/MSVC; local doctor records the actual available tools.
+Use an interactive desktop 4D host with component classes, `SystemWorker` and
+persistent `CALL WORKER` support. **Source and exact compiled-package host
+contracts have been verified with 4D/tool4d 20.7 on Apple Silicon only.**
+That is the tested baseline, not a claim that every newer host/platform works.
+The host must also meet its own 4D operating-system requirements.
 
-## Build and verification
+| Platform | Bundled helper | 4D component host evidence |
+|---|---|---|
+| macOS Apple Silicon | Universal macOS executable; native CI passed | Source and compiled headless contracts passed on 20.7 |
+| macOS Intel | Same universal executable; native Intel CI passed | Real Intel 4D loading not_run |
+| Windows x64 | Native layered-window executable; native CI passed | Real Windows 4D loading not_run |
 
-Read [AGENTS.md](AGENTS.md) before modifying identity or the acceptance pipeline.
-The repository is already initialized for exact basename `Overlay`, namespace
-`Overlay`, CLI `overlay-cli`, language `cpp`; do not initialize the original
-`miyako/4d-component-template` or reconfigure this initialized destination.
+Linux and native Windows ARM64 are unsupported. The macOS helper's deployment
+target is macOS 11; this does not lower the host 4D version's OS requirements.
+Unsigned downloads may be blocked by Gatekeeper/quarantine; no trust bypass is
+provided. Dependency-manager installation is **not verified**; the instructions
+above describe manual installation, not a tested dependency-manager workflow.
 
-```sh
-python3 scripts/doctor.py --root .
-python3 -m unittest discover -s tests -v
-python3 scripts/generate_icons.py --check
-python3 scripts/build_cli.py --root . --target macos-arm64
+## Show a PNG without blocking the form
+
+Put a suitable `overlay.png` on the desktop. Run this from a form method or
+button in a desktop host. Keep the API and returned handle in `Form` so another
+button can cancel the invocation:
+
+```4d
+var $target : Text
+var $png : 4D.File
+var $options; $callback : Object
+
+$target:="macOS-universal"
+If (Is Windows)
+    $target:="Windows-x64"
+End if
+Form.overlay:=cs.Overlay.Overlay.new($target)
+$png:=Folder(fk desktop folder).file("overlay.png")
+$options:=New object("image"; $png; "x"; 100; "y"; 100; "mode"; "clickable")
+$options.timeoutMs:=5000
+$options.fadeInMs:=150
+$options.fadeOutMs:=150
+$callback:=Formula(CALL WORKER(1; Formula(Overlay_completed($1)); $1))
+Form.overlayHandle:=Form.overlay.show($options; $callback)
 ```
 
-Native targets: `macos-arm64`, `macos-x64`, `windows-x64`. The two workflows
-remain **CI** and manual main-only **Publish**. CI runs noninteractive CLI
-regressions on each native target, registers CTest tests through CMake, and
-assembles both macOS slices with `lipo` plus the Windows x64 resource. Headless
-green CI does **not** establish interactive GUI input behavior.
+Create the host project method **`Overlay_completed`**:
 
-Every native binary requires its same-revision `build-manifest.json`.
-C++ cross mode is unsupported by the acceptance helper; do not manufacture a
-Windows binary or relabel translated Intel execution as native Intel evidence.
-On a native ARM Mac without all three artifacts, source-host/compilation checks
-may be possible, but the full cross-platform packer correctly remains blocked.
-
-Free pinned tool4d for unsigned local checks needs no serial or signing secrets:
-
-```sh
-python3 scripts/ci_config.py download-tool4d --root .
-python3 scripts/test_4d.py --root . --tool4d .tools/tool4d.app/Contents/MacOS/tool4d
-python3 scripts/compile_component.py --root . --tool4d .tools/tool4d.app/Contents/MacOS/tool4d
+```4d
+#DECLARE($result : Object)
+If ($result.ok)
+    If ($result.value.outcome="accepted")
+        ALERT("Clicked at "+String($result.value.x)+", "+String($result.value.y))
+    Else
+        ALERT("Dismissed: "+$result.value.reason)
+    End if
+Else
+    If ($result.error.code#"cancelled")
+        ALERT("Overlay failed: "+$result.error.code)
+    End if
+End if
 ```
 
-Once all three same-source native artifacts are available:
+`show(options : Object; callback : Object)` returns an `OverlayHandle`
+immediately. The callback receives **one complete result object**, including
+validation/launch failures, on the invocation's isolated worker. The formula
+above forwards that result to the main worker for UI handling; it does not
+access `Form` from the component worker. Use `CALL FORM` to a live window for
+form-specific updates instead. Do not capture expired caller-local variables
+in the callback. `Null` is accepted when no callback is needed.
 
-```sh
-python3 scripts/accept_local.py --root . --repository miyako/Overlay \
-  --tool4d .tools/tool4d.app/Contents/MacOS/tool4d
+On success, `result.value` contains `outcome` and `reason`; only an accepted
+click has `x` and `y`. Dismissal reasons include `timeout`, `escape`, `cancel`,
+`host-exit`, and `screen-disconnect`. On failure, inspect `result.error.code`;
+available `stdout`, `stderr`, `exitCode` and system diagnostics are preserved.
+Nonempty stderr alone is not failure. A native validation error such as
+`unsupported_modal` is reported in structured stderr under a wrapper
+`cli_error`; prelaunch errors need not have an exit code.
+
+## Cancel and retain the handle
+
+In a Cancel button, or the form's unload handling:
+
+```4d
+var $requested : Boolean
+If (Value type(Form.overlayHandle)=Is object)
+    $requested:=Form.overlayHandle.cancel()
+End if
 ```
 
-An accepted local pair is `dist/Overlay.zip` and
-`dist/Overlay.acceptance.json`. The ZIP must strip `.4dm` sources, contain
-compiler-generated metadata/native libraries, and be unpacked and loaded by a
-real host with `Is compiled mode=True`. A successful compiler alone is not that
-gate. No signing, release, tag, publication or credential setup is part of this
-development task. Optional signing policy defaults to unsigned.
+`cancel()` returns true only for the first accepted request while active.
+Completion is asynchronous; use the callback or inspect `handle.done` and then
+`handle.result` without waiting. Cancellation produces `ok:false`,
+`cancelled:true`, `error.code:"cancelled"`, not a fabricated accepted/dismissed
+success. A completed handle cannot cancel another invocation.
 
-## Local evidence and remaining gates
+Dropping the handle or closing the form does **not** automatically cancel an
+overlay: cancel explicitly on form unload if it belongs to that form.
+The component retains its worker and system process until completion.
+The helper watches its original parent process by default to close on host exit.
 
-Use actual generated reports, not this checklist, as evidence:
-`build/compile-status.json`, `build/source-host-status.json`,
-`build/compiled-host-status.json`, and `build/acceptance.json` when present.
-`passed` means executed successfully; `not_run` is not a waiver.
+## PNG bytes instead of a file
 
-Required manual desktop checks: passive focus preservation and all-pixel input
-passthrough; clickable visible-pixel acceptance and alpha-zero holes delivering
-real clicks to a **different application**; keyboard focus/Escape; negative
-secondary-display coordinates and mixed DPI; screen removal; cancellation/host
-exit during fades; no orphan panel; overlapping timeout/click exactly-once
-completion. Test both native macOS architectures and Windows x64. No global
-click injection or accessibility bypass should be added to automate these checks.
+`showBlob(png : Blob; options : Object; callback : Object)` accepts binary PNG
+bytes. Do not pass Text or base64, and omit `options.image`. After the form
+initialization above, this is an alternative to the `show` call, not an
+additional call to make while the first overlay is still active:
 
-An opt-in ten-second alpha-hole probe generates its own PNG and bounds the
-helper lifetime (never run by CI):
-
-```sh
-python3 scripts/manual_overlay.py --executable build/macos-arm64/overlay-cli \
-  --x 100 --y 100 --mode clickable
+```4d
+var $pngBytes : Blob
+var $blobOptions; $blobCallback : Object
+DOCUMENT TO BLOB(Folder(fk desktop folder).file("overlay.png").platformPath; $pngBytes)
+$blobOptions:=New object("x"; 100; "y"; 100; "mode"; "passive"; "timeoutMs"; 3000)
+$blobCallback:=Formula(CALL WORKER(1; Formula(Overlay_completed($1)); $1))
+Form.overlayHandle:=Form.overlay.showBlob($pngBytes; $blobOptions; $blobCallback)
 ```
 
-Place a control in another application underneath the hole. Repeat with
-`--mode passive` and `--stdin`. The script reports process output, **not** a
-success claim about whether another application actually received the click.
-The [cross-OS desktop checklist](docs/manual-desktop.md) covers local coordinates,
-focus, bounded cancellation/owned-host exit, mixed DPI and real 4D teardown.
-The probe supports `--cancel-after-ms 500` and `--host-exit-after-ms 500`
-without terminating a real 4D instance.
+This also forwards completion to the main worker for UI handling. File input is
+preferable for large images because Blob bytes are copied into the worker message.
 
-Dependency-manager download/install, signed/quarantined downloads and
-notarization are separate unexecuted gates until explicitly tested.
+## Modes, placement and timing
+
+| Option | Meaning |
+|---|---|
+| `mode` | `"passive"` (default): all pixels pass input through, no activation. `"clickable"`: visible pixels accept a click; alpha-zero holes are intended to pass through. Cross-application hole delivery remains unverified. |
+| `x`, `y` | Native desktop coordinates, default 0. macOS: points, main-display top-left, Y down. Windows: physical pixels, primary-display top-left, per-monitor DPI aware. Negative secondary-display positions are valid. Not 4D form coordinates. |
+| `screen` | Optional screen index restricting placement validation; does not change the coordinate origin. Use `overlay.screens()` to inspect current displays. |
+| `scale`, `opacity` | Default 1. Scale 0.01-16, aspect-preserving nearest-neighbor rendering; opacity 0-1. Permanently invisible clickable content fails. |
+| `timeoutMs` | Default 0: no automatic display timeout. Positive maximum 3600000 ms. Use a finite timeout or retain a cancellation path. |
+| `fadeInMs`, `fadeOutMs` | Default 0; each 0-60000 ms, smoothstep easing. Cancellation/host exit can stop a fade promptly. |
+| `modal` | Default false. `true` is explicitly unsupported; waiting for a helper is not application or 4D modality. |
+
+Returned click coordinates have a **top-left origin relative to the whole
+rendered overlay**, in macOS points or Windows physical pixels, not source PNG
+pixels. The image must have visible content on a connected/selected display,
+not merely an intersecting transparent bounding box.
+
+Only PNG is supported; rasterize SVG in 4D first. Limits include 32 MiB encoded
+input, dimensions up to 8192, 16777216 decoded/scaled pixels, and a 5-second binary
+stdin deadline. Malformed, empty, fully transparent or invalidly placed images
+fail. Unknown options and invalid values are rejected.
+
+## Preview limitations and evidence
+
+- Clickable artwork is capped at **512 coverage rectangles**. Highly fragmented
+  images fail explicitly instead of creating unbounded native windows.
+- Windows are intentionally nonactivating. Escape applies only when a clickable
+  overlay actually has focus; ordinarily use timeout/cancel/host lifetime.
+  There is no global Escape or outside-click interception.
+- One user-confirmed Apple Silicon helper probe accepted a visible-frame click,
+  returned local coordinates and closed. It did **not** verify numerical
+  coordinate accuracy, hole passthrough or 4D GUI integration.
+- Native Intel/Windows 4D loading, real cross-application hole delivery, real 4D
+  GUI behavior, focus, mixed DPI, display disconnect, interactive teardown,
+  dependency-manager installation and signing/notarization remain `not_run`.
+
+The package was assembled from same-revision native CI binaries, freshly compiled
+and tested as an unpacked source-stripped ZIP on Apple Silicon. Its acceptance
+status remains **`partial`, `finished:true`, `release_ready:false`**. The
+[release notes and assets](https://github.com/miyako/Overlay/releases/tag/0.1.0)
+contain exact provenance and the checksum.
+
+## Reference
+
+- [Overlay API and callback contracts](component/Overlay/Documentation/Classes/Overlay.md)
+- [OverlayHandle lifecycle](component/Overlay/Documentation/Classes/OverlayHandle.md)
+- [Native protocol, limits and errors](cli/README.md)
+- [Bounded desktop checklist and real 4D demo](docs/manual-desktop.md)
+- [Contributor build/acceptance playbook](AGENTS.md)
+- [MIT license](LICENSE) and [bundled notices](component/Overlay/Resources/licenses/)
+
+`version()`, `screens()` and `capabilities()` are bounded synchronous metadata
+calls returning `{ok, value, ...}` envelopes; only `show`/`showBlob` display
+asynchronously. For native diagnostics:
+
+| Command | Version response |
+|---|---|
+| `overlay-cli --version` | `{"protocol":1,"version":"0.1.0"}` + LF |
