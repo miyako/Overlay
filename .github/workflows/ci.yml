@@ -73,6 +73,8 @@ jobs:
         run: rustup default 1.99.1
       - name: Selected CLI contract tests
         run: python -m unittest discover -s tests -p test_cli.py -v
+      - name: Cross-platform provenance and feature integration
+        run: python -m unittest discover -s tests -p test_overlay_integration.py -v
       - name: Native build and protocol smoke tests
         run: python scripts/build_cli.py --target "$CLI_TARGET" --language "$CLI_LANGUAGE"
         shell: bash

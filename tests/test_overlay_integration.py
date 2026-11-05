@@ -1,5 +1,6 @@
 """Destination-specific build/version integration, independent of desktop access."""
 import importlib.util
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -15,6 +16,20 @@ spec.loader.exec_module(build_cli)
 
 
 class OverlayIntegrationTests(unittest.TestCase):
+    def test_source_digest_uses_cross_platform_case_sensitive_path_order(self):
+        from build_provenance import source_digest
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            (root / "cli").mkdir()
+            names = ("template.json", "package.json", "cli/CMakeLists.txt",
+                     "cli/README.md", "cli/common.cpp", "cli/main.cpp")
+            expected = hashlib.sha256()
+            for name in names:
+                content = name.encode("ascii") + b"\n"
+                (root / name).write_bytes(content)
+                expected.update(name.encode("ascii") + b"\0" + content + b"\0")
+            self.assertEqual(source_digest(root), expected.hexdigest())
+
     def test_exact_identity(self):
         config = json.loads((ROOT / "template.json").read_text())
         self.assertTrue(config["initialized"])

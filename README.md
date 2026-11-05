@@ -198,6 +198,10 @@ python3 scripts/manual_overlay.py --executable build/macos-arm64/overlay-cli \
 Place a control in another application underneath the hole. Repeat with
 `--mode passive` and `--stdin`. The script reports process output, **not** a
 success claim about whether another application actually received the click.
+The [cross-OS desktop checklist](docs/manual-desktop.md) covers local coordinates,
+focus, bounded cancellation/owned-host exit, mixed DPI and real 4D teardown.
+The probe supports `--cancel-after-ms 500` and `--host-exit-after-ms 500`
+without terminating a real 4D instance.
 
 Dependency-manager download/install, signed/quarantined downloads and
 notarization are separate unexecuted gates until explicitly tested.
