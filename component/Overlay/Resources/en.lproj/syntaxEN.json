@@ -1,0 +1,421 @@
+{
+	"_method_": {},
+	"cs.Overlay": {
+		"OverlayHandle": {
+			"new()": {
+				"Syntax": "**.new**( *state* : Object )",
+				"Params": [
+					[
+						"state",
+						"Object",
+						"->"
+					]
+				],
+				"Summary": ""
+			}
+		},
+		"Overlay": {
+			"new()": {
+				"Syntax": "**.new**( *target* : Text )",
+				"Params": [
+					[
+						"target",
+						"Text",
+						"->"
+					]
+				],
+				"Summary": ""
+			}
+		},
+		"_OverlayOperation": {
+			"new()": {
+				"Syntax": "**.new**( *state* : Object; *callback* : Object; *options* : Object )",
+				"Params": [
+					[
+						"state",
+						"Object",
+						"->"
+					],
+					[
+						"callback",
+						"Object",
+						"->"
+					],
+					[
+						"options",
+						"Object",
+						"->"
+					]
+				],
+				"Summary": ""
+			}
+		},
+		"_CLI": {
+			"new()": {
+				"Syntax": "**.new**( *executableName* : Text; *target* : Text )",
+				"Params": [
+					[
+						"executableName",
+						"Text",
+						"->"
+					],
+					[
+						"target",
+						"Text",
+						"->"
+					]
+				],
+				"Summary": ""
+			}
+		}
+	},
+	"OverlayHandle": {
+		"get result()": {
+			"Syntax": "**.get result**()->result : Object",
+			"Params": [
+				[
+					"result",
+					"Object",
+					"<-"
+				]
+			],
+			"Summary": ""
+		},
+		"cancel()": {
+			"Syntax": "**.cancel**()->accepted : Boolean",
+			"Params": [
+				[
+					"accepted",
+					"Boolean",
+					"<-"
+				]
+			],
+			"Summary": ""
+		},
+		"get cancelled()": {
+			"Syntax": "**.get cancelled**()->cancelled : Boolean",
+			"Params": [
+				[
+					"cancelled",
+					"Boolean",
+					"<-"
+				]
+			],
+			"Summary": ""
+		},
+		"get done()": {
+			"Syntax": "**.get done**()->done : Boolean",
+			"Params": [
+				[
+					"done",
+					"Boolean",
+					"<-"
+				]
+			],
+			"Summary": ""
+		}
+	},
+	"Overlay": {
+		"showBlob()": {
+			"Syntax": "**.showBlob**( *png* : Blob; *options* : Object; *callback* : Object )->handle : cs.Overlay.OverlayHandle",
+			"Params": [
+				[
+					"png",
+					"Blob",
+					"->"
+				],
+				[
+					"options",
+					"Object",
+					"->"
+				],
+				[
+					"callback",
+					"Object",
+					"->"
+				],
+				[
+					"handle",
+					"cs.Overlay.OverlayHandle",
+					"<-"
+				]
+			],
+			"Summary": ""
+		},
+		"capabilities()": {
+			"Syntax": "**.capabilities**()->result : Object",
+			"Params": [
+				[
+					"result",
+					"Object",
+					"<-"
+				]
+			],
+			"Summary": ""
+		},
+		"screens()": {
+			"Syntax": "**.screens**()->result : Object",
+			"Params": [
+				[
+					"result",
+					"Object",
+					"<-"
+				]
+			],
+			"Summary": ""
+		},
+		"show()": {
+			"Syntax": "**.show**( *options* : Object; *callback* : Object )->handle : cs.Overlay.OverlayHandle",
+			"Params": [
+				[
+					"options",
+					"Object",
+					"->"
+				],
+				[
+					"callback",
+					"Object",
+					"->"
+				],
+				[
+					"handle",
+					"cs.Overlay.OverlayHandle",
+					"<-"
+				]
+			],
+			"Summary": ""
+		},
+		"version()": {
+			"Syntax": "**.version**()->result : Object",
+			"Params": [
+				[
+					"result",
+					"Object",
+					"<-"
+				]
+			],
+			"Summary": ""
+		}
+	},
+	"_OverlayOperation": {
+		"onDataError()": {
+			"Syntax": "**.onDataError**( *worker* : Object; *event* : Object )",
+			"Params": [
+				[
+					"worker",
+					"Object",
+					"->"
+				],
+				[
+					"event",
+					"Object",
+					"->"
+				]
+			],
+			"Summary": ""
+		},
+		"onData()": {
+			"Syntax": "**.onData**( *worker* : Object; *event* : Object )",
+			"Params": [
+				[
+					"worker",
+					"Object",
+					"->"
+				],
+				[
+					"event",
+					"Object",
+					"->"
+				]
+			],
+			"Summary": ""
+		},
+		"finish()": {
+			"Syntax": "**.finish**( *result* : Object )",
+			"Params": [
+				[
+					"result",
+					"Object",
+					"->"
+				]
+			],
+			"Summary": ""
+		},
+		"onTerminate()": {
+			"Syntax": "**.onTerminate**( *worker* : Object; *event* : Object )",
+			"Params": [
+				[
+					"worker",
+					"Object",
+					"->"
+				],
+				[
+					"event",
+					"Object",
+					"->"
+				]
+			],
+			"Summary": ""
+		},
+		"start()": {
+			"Syntax": "**.start**( *prepared* : Object; *stdin* : Boolean; *png* : Blob )",
+			"Params": [
+				[
+					"prepared",
+					"Object",
+					"->"
+				],
+				[
+					"stdin",
+					"Boolean",
+					"->"
+				],
+				[
+					"png",
+					"Blob",
+					"->"
+				]
+			],
+			"Summary": ""
+		},
+		"currentDirectory": {
+			"Syntax": "currentDirectory : 4D.Folder"
+		},
+		"completed": {
+			"Syntax": "completed : Boolean"
+		},
+		"worker": {
+			"Syntax": "worker : 4D.SystemWorker"
+		},
+		"stderr": {
+			"Syntax": "stderr : Text"
+		},
+		"encoding": {
+			"Syntax": "encoding : Text"
+		},
+		"stdout": {
+			"Syntax": "stdout : Text"
+		},
+		"inputErrors": {
+			"Syntax": "inputErrors : Collection"
+		},
+		"dataType": {
+			"Syntax": "dataType : Text"
+		},
+		"callback": {
+			"Syntax": "callback : Object"
+		},
+		"hideWindow": {
+			"Syntax": "hideWindow : Boolean"
+		},
+		"state": {
+			"Syntax": "state : Object"
+		}
+	},
+	"_CLI": {
+		"resolve()": {
+			"Syntax": "**.resolve**()->result : Object",
+			"Params": [
+				[
+					"result",
+					"Object",
+					"<-"
+				]
+			],
+			"Summary": ""
+		},
+		"execute()": {
+			"Syntax": "**.execute**( *arguments* : Collection )->result : Object",
+			"Params": [
+				[
+					"arguments",
+					"Collection",
+					"->"
+				],
+				[
+					"result",
+					"Object",
+					"<-"
+				]
+			],
+			"Summary": ""
+		},
+		"get compiled()": {
+			"Syntax": "**.get compiled**()->compiled : Boolean",
+			"Params": [
+				[
+					"compiled",
+					"Boolean",
+					"<-"
+				]
+			],
+			"Summary": ""
+		},
+		"target": {
+			"Syntax": "target : Text"
+		},
+		"executableName": {
+			"Syntax": "executableName : Text"
+		}
+	},
+	"_Process": {
+		"execute()": {
+			"Syntax": "**.execute**( *file* : 4D.File; *arguments* : Collection )->result : Object",
+			"Params": [
+				[
+					"file",
+					"4D.File",
+					"->"
+				],
+				[
+					"arguments",
+					"Collection",
+					"->"
+				],
+				[
+					"result",
+					"Object",
+					"<-"
+				]
+			],
+			"Summary": ""
+		},
+		"commandLine()": {
+			"Syntax": "**.commandLine**( *file* : 4D.File; *arguments* : Collection )->result : Object",
+			"Params": [
+				[
+					"file",
+					"4D.File",
+					"->"
+				],
+				[
+					"arguments",
+					"Collection",
+					"->"
+				],
+				[
+					"result",
+					"Object",
+					"<-"
+				]
+			],
+			"Summary": ""
+		},
+		"quote()": {
+			"Syntax": "**.quote**( *argument* : Text )->quoted : Text",
+			"Params": [
+				[
+					"argument",
+					"Text",
+					"->"
+				],
+				[
+					"quoted",
+					"Text",
+					"<-"
+				]
+			],
+			"Summary": ""
+		}
+	}
+}

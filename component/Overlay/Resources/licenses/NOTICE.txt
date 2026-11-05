@@ -1,0 +1,17 @@
+Overlay
+Copyright (c) 2026 Keisuke Miyako
+License: MIT. The component package includes the repository LICENSE.
+
+The native helper uses operating-system frameworks:
+macOS: AppKit, Foundation, CoreGraphics and ImageIO.
+Windows: Win32 User32/GDI, COM and Windows Imaging Component (WIC).
+These frameworks are provided by the operating system, not copied into this
+component. No third-party PNG decoder or GUI toolkit is bundled.
+
+C++ standard-library/runtime code is supplied by the selected Xcode/MSVC
+toolchain. The Windows build uses the Microsoft static C/C++ runtime.
+Redistribution must comply with the applicable Xcode SDK and Microsoft Visual
+Studio runtime license terms for the actual compiler used to produce an asset.
+Do not treat this notice or a successful package check as a legal audit.
+
+The free 4D tool4d compiler is separately licensed and is not redistributed.

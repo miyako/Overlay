@@ -19,6 +19,8 @@ import rename_feature
 
 class BumpReleaseTests(unittest.TestCase):
     def setUp(self):
+        if not (ROOT / "cli-starters").is_dir():
+            self.skipTest("multi-language template fixtures require original cli-starters")
         self.root = ROOT / (".bump-release-test-" + uuid.uuid4().hex)
         self.root.mkdir()
         self.addCleanup(shutil.rmtree, self.root)

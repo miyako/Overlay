@@ -1,8 +1,8 @@
 {
-  "name": "4d-component-template",
+  "name": "Overlay",
   "version": "0.1.0",
   "private": true,
-  "description": "Deterministic UTF-8 greeting example",
+  "description": "Native modeless PNG tooltips and clickable overlays",
   "license": "MIT",
   "tool": {
     "platform": "macos",
