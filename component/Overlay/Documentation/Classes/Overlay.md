@@ -118,6 +118,20 @@ Cancellation is `cancelled`, not a fabricated successful native terminal event.
 Prelaunch failures never invent an exit code. Nonempty stderr alone is not
 failure when exit status is zero.
 
+For user-facing diagnostics, the host example's `Overlay_error_details(result)`
+and `Overlay_error_capture` project methods safely format structured native
+stderr. Copy both methods from `tests/host/Project/Sources/Methods/` into a host
+using the README callback. They are host-side examples, not additional methods
+of this component, and work with the released 0.1.0 envelope.
+The formatter distinguishes `cli_error` from its native cause, for example
+`image_complexity: clickable PNG exceeds 512 alpha-coverage rectangles`.
+It separately guards payload/protocol/error types, restores the local error
+handler immediately after JSON parsing, and falls back to the wrapper message
+and raw stderr on malformed output. `diagnostic.result` preserves the original
+envelope; `diagnostic.cancelled` is true only for an acknowledged failure
+envelope with `cancelled:true` and wrapper code `cancelled`.
+`Overlay_demo_done` uses this formatter instead of displaying only `cli_error`.
+
 Escape dismissal is a native event for an actually focused clickable overlay,
 not global keyboard monitoring. Passive overlays do not acquire keyboard focus.
 
@@ -133,6 +147,14 @@ as its deterministic feature-success case, validates an original opaque 2×2 PNG
 with native `validate` without showing a window, and runs native metadata, invalid async
 input, unsupported modal input, binary-invalid input and cancellation without
 opening an interactive overlay, and records the actual compiled mode.
+It also tests the host diagnostic formatter with actual modal failure output,
+complexity errors, malformed/scalar/wrong-type JSON, missing process status and
+cancellation lookalikes. These are diagnostic tests, not GUI acceptance.
+
+The user reported a successful source-component manual test in real desktop 4D
+on macOS after replacing an overly fragmented alpha mask with a simple blue
+frame. No independent transparent-hole, coordinate-accuracy, DPI or other-platform
+attestation is inferred from that report.
 
 ## Verified 4D API references
 

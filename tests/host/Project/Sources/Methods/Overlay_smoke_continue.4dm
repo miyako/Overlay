@@ -28,6 +28,7 @@ $report.modal:=$modal.result
 $report.binary:=$binary.result
 $report.cancelled:=$cancelled.result
 $report.nullShow:=$context.nullShow.result
+$report.demoDiagnostics:=Overlay_demo_diagnostics($report.modal)
 $report.callbackCount:=$context.callbackState.count
 $report.callbackResults:=New collection
 For each ($json; $context.callbackState.results)

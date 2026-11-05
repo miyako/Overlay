@@ -42,6 +42,8 @@ def valid_status(compiled=False):
 
     for section in ("feature", "execution"):
         status = apply_assertions(status, CONTRACT[section]["assertions"])
+    for diagnostic in status["demoDiagnostics"]["invalidPayloads"]:
+        diagnostic["message"] = "cli_error: helper failed\nStderr: unsupported payload"
     assertions = {entry["path"]: entry for entry in CONTRACT["execution"]["assertions"]}
     rejected = assertions["/rejectedArguments"]["each"][0]["equals"]
     status["rejectedArguments"] = [{"type": i, "result": copy.deepcopy(rejected)} for i in range(9)]

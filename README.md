@@ -5,13 +5,14 @@ form boundaries**. The public API is `cs.Overlay.Overlay`. A bundled native
 helper draws the image in a separate process; no 4D plug-in or browser is needed.
 Display calls are asynchronous and return a cancellable handle.
 
-**[0.1.0 prerelease](https://github.com/miyako/Overlay/releases/tag/0.1.0):
-unsigned, unnotarized, and not production ready.** Transparent-hole delivery to
-other applications and several platform/GUI behaviors still require verification.
+**Unsigned and unnotarized early release.** See the
+[latest release](https://github.com/miyako/Overlay/releases/latest) for its exact
+checks and limitations. Transparent-hole delivery to other applications and
+several platform/GUI behaviors still require verification.
 
 ## Install
 
-1. Download [Overlay.zip](https://github.com/miyako/Overlay/releases/download/0.1.0/Overlay.zip),
+1. Download [Overlay.zip](https://github.com/miyako/Overlay/releases/latest/download/Overlay.zip),
    not GitHub's source archive. The release includes a checksum and public
    acceptance summary.
 2. Quit the host database. Extract the ZIP and place the entire
@@ -81,6 +82,7 @@ Create the host project method **`Overlay_completed`**:
 
 ```4d
 #DECLARE($result : Object)
+var $diagnostic : Object
 If ($result.ok)
     If ($result.value.outcome="accepted")
         ALERT("Clicked at "+String($result.value.x)+", "+String($result.value.y))
@@ -88,11 +90,31 @@ If ($result.ok)
         ALERT("Dismissed: "+$result.value.reason)
     End if
 Else
-    If ($result.error.code#"cancelled")
-        ALERT("Overlay failed: "+$result.error.code)
+    $diagnostic:=Overlay_error_details($result)
+    If (Not($diagnostic.cancelled))
+        ALERT($diagnostic.message)
     End if
 End if
 ```
+
+Also add the host project methods
+[`Overlay_error_details`](tests/host/Project/Sources/Methods/Overlay_error_details.4dm)
+and [`Overlay_error_capture`](tests/host/Project/Sources/Methods/Overlay_error_capture.4dm).
+These are sample host methods, not new component APIs, so they also work with
+the existing 0.1.0 package. The formatter shows the native error code/message,
+wrapper code and exit status; for example:
+
+```text
+image_complexity: clickable PNG exceeds 512 alpha-coverage rectangles
+Wrapper: cli_error
+Exit code: 2
+```
+
+Parsing is locally guarded and restores the previous error handler. Malformed
+or unexpected stderr falls back to the wrapper message and raw stderr rather
+than throwing or hiding the failure. The original envelope remains available as
+`diagnostic.result`. Only `ok:false`, `cancelled:true` with wrapper code
+`cancelled` is ignored as an acknowledged cancellation.
 
 `show(options : Object; callback : Object)` returns an `OverlayHandle`
 immediately. The callback receives **one complete result object**, including
@@ -173,7 +195,36 @@ input, dimensions up to 8192, 16777216 decoded/scaled pixels, and a 5-second bin
 stdin deadline. Malformed, empty, fully transparent or invalidly placed images
 fail. Unknown options and invalid values are rejected.
 
-## Preview limitations and evidence
+## Troubleshooting
+
+`cli_error` is the wrapper classification, not the underlying cause. Use the
+callback formatter above before changing options or artwork.
+
+| Reported code | What to check |
+|---|---|
+| `image_complexity` | Clickable alpha coverage exceeds 512 merged rectangles. Simplify the alpha mask: use a contiguous visible shape or a simple opaque blue rectangular frame with one transparent hole. Many separate alpha islands or changing row boundaries increase coverage complexity; texture/color variation alone does not. |
+| `invalid_image`, `image_decode` | Check that the input is a valid, nonempty, single-frame PNG, not renamed SVG/JPEG or fully transparent content. Check effective visibility after scaling/opacity too. |
+| `image_limit` | Reduce encoded bytes, dimensions or scaled pixels to the documented limits. |
+| `offscreen`, `screen_unavailable` | Query `screens()`. Visible pixels, not just transparent image bounds, must intersect a connected/selected screen. Coordinates are native desktop coordinates, not form coordinates. |
+| `unsupported_modal` | Set `modal:false` or omit it; true application/4D modality is not supported. |
+| `invalid_arguments`, `invalid_argument` | Check option spelling, types, ranges and File/Blob input. Unknown options fail explicitly. |
+| `unsupported_architecture`, `unsupported_platform` | Use a supported host. Released Windows 0.1.0 needs `.new("Windows-x64")`; native Windows ARM64 and Linux are unsupported. |
+| `missing_executable`, `launch_failed`, `process_error`, `process_terminated` | Keep the entire component folder intact; inspect the retained stderr/status/system diagnostics and OS trust restrictions. Do not repair by falling back to PATH or disabling trust checks. |
+
+The native helper's `validate` command checks the PNG, clickable complexity and
+placement **without showing a window**. For macOS, substitute your installed
+component and PNG paths:
+
+```sh
+"/path/to/Overlay.4dbase/Resources/bin/macOS/overlay-cli" validate \
+  --image "/path/to/overlay.png" --x 100 --y 100 --mode clickable
+```
+
+On Windows use `Resources/bin/Windows/overlay-cli.exe` with the same arguments.
+Match the display call's mode, position, scale and opacity. Validation success
+does not establish real cross-application click-through.
+
+## Limitations and evidence
 
 - Clickable artwork is capped at **512 coverage rectangles**. Highly fragmented
   images fail explicitly instead of creating unbounded native windows.
@@ -183,15 +234,21 @@ fail. Unknown options and invalid values are rejected.
 - One user-confirmed Apple Silicon helper probe accepted a visible-frame click,
   returned local coordinates and closed. It did **not** verify numerical
   coordinate accuracy, hole passthrough or 4D GUI integration.
+- The user subsequently reported successful source-component use in real desktop
+  4D on macOS with a simple blue frame after diagnosing the 512-rectangle error.
+  This is scoped user-reported manual success, not separate attestation of hole
+  delivery, coordinate accuracy, focus or other platforms.
 - Native Intel/Windows 4D loading, real cross-application hole delivery, real 4D
-  GUI behavior, focus, mixed DPI, display disconnect, interactive teardown,
+  GUI edge cases, focus, mixed DPI, display disconnect, interactive teardown,
   dependency-manager installation and signing/notarization remain `not_run`.
 
 The package was assembled from same-revision native CI binaries, freshly compiled
 and tested as an unpacked source-stripped ZIP on Apple Silicon. Its acceptance
 status remains **`partial`, `finished:true`, `release_ready:false`**. The
-[release notes and assets](https://github.com/miyako/Overlay/releases/tag/0.1.0)
+[release notes and assets](https://github.com/miyako/Overlay/releases/latest)
 contain exact provenance and the checksum.
+The earlier [0.1.0 preview](https://github.com/miyako/Overlay/releases/tag/0.1.0)
+remains available separately; its original package and evidence are unchanged.
 
 ## Reference
 

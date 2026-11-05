@@ -11,6 +11,27 @@
       }
     ],
     "assertions": [
+      {"path": "/demoDiagnostics/handlerRestored", "equals": true},
+      {"path": "/demoDiagnostics/complexity/nativeUsed", "equals": true},
+      {"path": "/demoDiagnostics/complexity/native/code", "equals": "image_complexity"},
+      {"path": "/demoDiagnostics/complexity/message", "equals": "image_complexity: clickable PNG exceeds 512 alpha-coverage rectangles\nWrapper: cli_error\nExit code: 2"},
+      {"path": "/demoDiagnostics/malformed/nativeUsed", "equals": false},
+      {"path": "/demoDiagnostics/malformed/message", "equals": "cli_error: helper failed\nStderr: not JSON\nExit code: 2"},
+      {"path": "/demoDiagnostics/malformed/result/stderr", "equals": "not JSON"},
+      {"path": "/demoDiagnostics/invalidPayloads", "length": 11, "each": [
+        {"path": "/nativeUsed", "equals": false},
+        {"path": "/cancelled", "equals": false},
+        {"path": "/message", "matches": "cli_error: helper failed\\nStderr: [\\s\\S]+"}
+      ]},
+      {"path": "/demoDiagnostics/cancelled/cancelled", "equals": true},
+      {"path": "/demoDiagnostics/notCancelled", "length": 4, "each": [
+        {"path": "/cancelled", "equals": false}
+      ]},
+      {"path": "/demoDiagnostics/prelaunch/message", "equals": "missing_executable: Bundled CLI is missing"},
+      {"path": "/demoDiagnostics/prelaunch/result/exitCode", "absent": true},
+      {"path": "/demoDiagnostics/invalidWrapper/message", "equals": "unknown_error\nStderr: raw diagnostic"},
+      {"path": "/demoDiagnostics/nullResult/message", "equals": "Overlay failed: missing result"},
+      {"path": "/demoDiagnostics/modal/native/code", "equals": "unsupported_modal"},
       {"path": "/version/ok", "equals": true},
       {"path": "/version/stdout", "equals": "{\"protocol\":1,\"version\":\"0.1.0\"}\n"},
       {"path": "/version/stderr", "equals": ""},

@@ -35,6 +35,14 @@ class PlaybookTests(unittest.TestCase):
                     self.assertTrue(destination.is_relative_to(ROOT))
                     self.assertTrue(destination.exists(), "broken local playbook link")
 
+    def test_release_guides_require_bare_new_tags_and_immutable_prior_releases(self):
+        for source in (ROOT / "AGENTS.md", SKILL):
+            text = source.read_text(encoding="utf-8")
+            with self.subTest(source=source.relative_to(ROOT)):
+                for required in ("prefix-free", "legacy", "0.1.1", "v0.1.1", "immutable"):
+                    self.assertIn(required, text)
+                self.assertNotIn("--tag v0.1.0", text)
+
     def test_versioned_public_pin_and_cross_platform_checkout_policy(self):
         tool = json.loads((ROOT / "package.json").read_text())["tool"]
         self.assertEqual(tool["build"], "101905")

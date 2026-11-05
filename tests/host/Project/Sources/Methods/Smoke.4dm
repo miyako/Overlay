@@ -33,6 +33,7 @@ If (Is Windows)
 End if
 $tool:=cs.Overlay.Overlay.new($target)
 $report:=New object("success"; True; "finished"; False; "cases"; New collection)
+$report.hostCompiled:=Is compiled mode
 $report.compiled:=$tool._cli.compiled
 If ($request.expectCompiled#$report.compiled)
 	$report.success:=False

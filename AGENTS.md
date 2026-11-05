@@ -68,6 +68,24 @@ produce `cs.AcmeHello.Greeting` in a host; component-internal code uses
 the namespace shares component classes. Underscore names are internal
 **by convention**, not access control.
 
+### Component release tags: no `v` prefix
+
+Component versions and new release tags must be identical prefix-free SemVer:
+`0.1.1`, **not** `v0.1.1`. Publish emits stable `X.Y.Z`; package validation,
+signing proofs and publication reject prefixed tags rather than stripping them.
+Upstream Actions/toolchain tags and historical external release URLs are not
+component-tag rewrite targets.
+
+Migration is read-only for published history: version planning considers the
+highest numeric stable version across both `X.Y.Z` and legacy `vX.Y.Z` tags,
+ignoring prerelease/build-metadata and unrelated tags. With no stable tag it
+bumps the configured version. Emit only a new prefix-free tag at the newly
+accepted version commit; never rename, move, delete or automatically alias old
+tags/releases, or reuse their acceptance/signing evidence. In particular,
+Overlay's existing `0.1.0` tag and assets are immutable; authorization for a new
+`0.1.1` release does not authorize changing them. Signing policy entries remain
+exact prefix-free versions and all provenance/publication gates remain required.
+
 ### Scope and stop rules
 
 * If a requested design requires a host-installed 4D plug-in, stop CLI-component
@@ -446,7 +464,7 @@ Run the actual stages (example version `0.1.0`, initialized destination only):
 python3 scripts/test_4d.py --root . --tool4d .tools/tool4d.app/Contents/MacOS/tool4d
 python3 scripts/compile_component.py --root . --tool4d .tools/tool4d.app/Contents/MacOS/tool4d
 python3 scripts/package_component.py --root . --repository OWNER/REPOSITORY \
-  --tag v0.1.0 --unpack-test
+  --tag 0.1.0 --unpack-test
 python3 scripts/test_4d.py --root . --tool4d .tools/tool4d.app/Contents/MacOS/tool4d \
   --component build/release-test/REPOSITORY.4dbase
 ```
@@ -546,8 +564,9 @@ inspection path is unsigned; release signing uses the explicit
 Keep exactly `.github/workflows/ci.yml` (**CI**) and `publish.yml` (**Publish**).
 **Actions → Publish → Run workflow** accepts **mode** patch/minor/major, default
 patch, and requires **main**. It does not accept or require an existing tag.
-`bump_release.py next --mode MODE` uses the highest stable `vX.Y.Z` tag, ignoring
-prereleases, or the configured version if no stable tag exists; it bumps that
+`bump_release.py next --mode MODE` uses the highest stable `X.Y.Z` tag (including
+legacy `vX.Y.Z` history only as a migration baseline), ignoring prereleases and
+build metadata, or the configured version if no stable tag exists; it bumps that
 base (initial `0.1.0` becomes `0.1.1` with patch). Validate synchronized metadata
 and reject downgrades before writes. `apply --version X.Y.Z --stage` updates
 only the validated configured version surfaces: package/template,
@@ -569,7 +588,7 @@ Only after compilation and exact final-host success does `release_assets.py`
 verify downloaded ZIP/DMG/proof bytes, accepted hashes/sizes, revision, native
 manifests and full source/final-host contracts. It then verifies main ancestry,
 checks remote tag/release collisions again, atomically creates a new
-`vX.Y.Z` tag at the accepted SHA and invokes `gh release create --verify-tag`
+prefix-free `X.Y.Z` tag at the accepted SHA and invokes `gh release create --verify-tag`
 with a literal validated asset list. GitHub's create-ref API rejects collisions
 even at the same SHA; no force/update/delete operation is used.
 No automatic tag-push release trigger exists.
