@@ -46,7 +46,7 @@ class OverlayIntegrationTests(unittest.TestCase):
         version = f"{major}.{minor}.{patch + 1}"
         config, updates = bump_release.plan(ROOT, version)
         self.assertEqual(config["version"], current)
-        self.assertEqual(set(updates), {
+        self.assertEqual({Path(name).as_posix() for name in updates}, {
             "template.json", "package.json", "README.md", "cli/main.cpp", "cli/README.md",
             "component/Overlay/Documentation/Classes/Overlay.md",
             "tests/host/Project/Sources/Methods/Smoke.4dm",
