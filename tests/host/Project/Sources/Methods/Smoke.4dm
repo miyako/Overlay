@@ -1,7 +1,7 @@
 //%attributes = {"invisible":true}
 var $ignored; $ticks : Integer
 var $parameter; $target : Text
-var $request; $result; $report; $callback; $callbackState; $context : Object
+var $request; $result; $report; $callback; $callbackState; $cancelState; $context : Object
 var $tool : cs.Overlay.Overlay
 var $operation : cs.Overlay._OverlayOperation
 var $requestFile; $statusFile; $renamedExecutable : 4D.File
@@ -86,10 +86,13 @@ $png{0}:=137
 $png{1}:=0
 $png{2}:=255
 $binary:=$tool.showBlob($png; New object; $callback)
-$cancelled:=$tool.show(New object("image"; $requestFile; "mode"; "invalid-mode"; "timeoutMs"; 0); $callback)
-$nullShow:=$tool.show(Null; $callback)
+$cancelState:=New shared object("done"; False; "cancelled"; False; "worker"; 0; "resultJSON"; "")
+$cancelled:=cs.Overlay.OverlayHandle.new($cancelState)
 $report.cancelAccepted:=$cancelled.cancel()
 $report.cancelRepeated:=$cancelled.cancel()
+$report.cancelProbe:="prelaunch"
+CALL WORKER("Overlay-cancel-probe-"+Generate UUID; Formula(Overlay_smoke_cancelled($1; $2)); $cancelState; $callback)
+$nullShow:=$tool.show(Null; $callback)
 $report.enqueueTicks:=Tickcount-$ticks
 $report.caller:=Current process
 $statusFile.setText(JSON Stringify($report))

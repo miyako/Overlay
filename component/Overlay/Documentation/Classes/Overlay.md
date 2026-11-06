@@ -147,6 +147,9 @@ as its deterministic feature-success case, validates an original opaque 2×2 PNG
 with native `validate` without showing a window, and runs native metadata, invalid async
 input, unsupported modal input, binary-invalid input and cancellation without
 opening an interactive overlay, and records the actual compiled mode.
+The cancellation probe explicitly cancels a handle before starting its isolated
+operation worker; it does not race a fast invalid-input helper or claim native
+GUI teardown coverage.
 It also tests the host diagnostic formatter with actual modal failure output,
 complexity errors, malformed/scalar/wrong-type JSON, missing process status and
 cancellation lookalikes. These are diagnostic tests, not GUI acceptance.

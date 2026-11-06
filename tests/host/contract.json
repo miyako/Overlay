@@ -71,6 +71,7 @@
       {"path": "/binary/error/code", "equals": "cli_error"},
       {"path": "/binary/stderr", "equals": "{\"protocol\":1,\"error\":{\"code\":\"invalid_image\",\"message\":\"expected PNG with IHDR\"}}\n"},
       {"path": "/cancelAccepted", "equals": true},
+      {"path": "/cancelProbe", "equals": "prelaunch"},
       {"path": "/cancelRepeated", "equals": false},
       {"path": "/cancelAfterDone", "equals": false},
       {"path": "/cancelled/ok", "equals": false},
