@@ -81,6 +81,20 @@ def require_toolchain(language):
         raise ValueError(f"{language} {'.'.join(map(str, minimum))} or newer is required")
 
 
+def cmake_toolchain(build_directory):
+    metadata = list((Path(build_directory) / "CMakeFiles").glob("*/CMakeCXXCompiler.cmake"))
+    if len(metadata) != 1:
+        raise ValueError("CMake must identify exactly one configured C++ compiler")
+    text = metadata[0].read_text(encoding="utf-8")
+    values = []
+    for key in ("CMAKE_CXX_COMPILER_ID", "CMAKE_CXX_COMPILER_VERSION"):
+        match = re.search(r'set\(' + key + r'\s+"([^"]+)"\)', text)
+        if match is None:
+            raise ValueError("CMake compiler metadata is missing " + key)
+        values.append(match[1])
+    return " ".join(values)
+
+
 def build(root, target, language=None, cross=False):
     root = Path(root).resolve()
     config = load_config(root, initialized=True, repository=os.environ.get("GITHUB_REPOSITORY"))
@@ -131,6 +145,8 @@ def build(root, target, language=None, cross=False):
         ]
     for command in commands:
         subprocess.run(command, cwd=source, env=env, check=True, timeout=600)
+    if selected == "cpp":
+        toolchain = cmake_toolchain(output / "cmake")
     if target == native:
         if selected == "go":
             subprocess.run(["go", "test", "./..."], cwd=source, env=env, check=True, timeout=600)
