@@ -6,6 +6,6 @@
   "cli": "overlay-cli",
   "language": "cpp",
   "feature": "Native modeless PNG tooltips and clickable overlays",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "feature_class": "Overlay"
 }

@@ -13,7 +13,7 @@ The host namespace is `Overlay`; component-internal code uses `cs.Overlay`.
 `version() : Object`, `screens() : Object` and `capabilities() : Object` use the synchronous generic
 adapter (30-second maximum). Successful envelopes contain `ok:true`, `stdout`,
 `stderr`, `exitCode:0`, and decoded `value`. Protocol 1 and each payload's field
-types are checked. `version()` returns `{"protocol":1,"version":"0.1.0"}`;
+types are checked. `version()` returns `{"protocol":1,"version":"0.1.1"}`;
 the host fixture checks that exact synchronized component/CLI version.
 `capabilities()` returns deterministic
 `{"protocol":1,"modal":false,"format":"png","modes":["passive","clickable"]}`.

@@ -1,7 +1,7 @@
 #include <csignal>
 #include "overlay.hpp"
 #include <iostream>
-const std::string_view kVersion = "0.1.0";
+const std::string_view kVersion = "0.1.1";
 #ifdef _WIN32
 #define NOMINMAX
 #include <windows.h>

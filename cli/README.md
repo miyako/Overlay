@@ -70,7 +70,7 @@ Results:
 {"protocol":1,"outcome":"dismissed","reason":"timeout"}
 {"protocol":1,"valid":true,"width":128,"height":64}
 {"protocol":1,"screens":[{"index":0,"x":0,"y":0,"width":1920,"height":1080,"scale":1}]}
-{"protocol":1,"version":"0.1.0"}
+{"protocol":1,"version":"0.1.1"}
 {"protocol":1,"modal":false,"format":"png","modes":["passive","clickable"]}
 ```
 

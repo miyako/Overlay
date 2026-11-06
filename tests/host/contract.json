@@ -7,170 +7,672 @@
         "stdout": "{\"protocol\":1,\"modal\":false,\"format\":\"png\",\"modes\":[\"passive\",\"clickable\"]}\n",
         "stderr": "",
         "exitCode": 0,
-        "value": {"protocol": 1, "modal": false, "format": "png", "modes": ["passive", "clickable"]}
+        "value": {
+          "protocol": 1,
+          "modal": false,
+          "format": "png",
+          "modes": [
+            "passive",
+            "clickable"
+          ]
+        }
       }
     ],
     "assertions": [
-      {"path": "/demoDiagnostics/handlerRestored", "equals": true},
-      {"path": "/demoDiagnostics/complexity/nativeUsed", "equals": true},
-      {"path": "/demoDiagnostics/complexity/native/code", "equals": "image_complexity"},
-      {"path": "/demoDiagnostics/complexity/message", "equals": "image_complexity: clickable PNG exceeds 512 alpha-coverage rectangles\nWrapper: cli_error\nExit code: 2"},
-      {"path": "/demoDiagnostics/malformed/nativeUsed", "equals": false},
-      {"path": "/demoDiagnostics/malformed/message", "equals": "cli_error: helper failed\nStderr: not JSON\nExit code: 2"},
-      {"path": "/demoDiagnostics/malformed/result/stderr", "equals": "not JSON"},
-      {"path": "/demoDiagnostics/invalidPayloads", "length": 11, "each": [
-        {"path": "/nativeUsed", "equals": false},
-        {"path": "/cancelled", "equals": false},
-        {"path": "/message", "matches": "cli_error: helper failed\\nStderr: [\\s\\S]+"}
-      ]},
-      {"path": "/demoDiagnostics/cancelled/cancelled", "equals": true},
-      {"path": "/demoDiagnostics/notCancelled", "length": 4, "each": [
-        {"path": "/cancelled", "equals": false}
-      ]},
-      {"path": "/demoDiagnostics/prelaunch/message", "equals": "missing_executable: Bundled CLI is missing"},
-      {"path": "/demoDiagnostics/prelaunch/result/exitCode", "absent": true},
-      {"path": "/demoDiagnostics/invalidWrapper/message", "equals": "unknown_error\nStderr: raw diagnostic"},
-      {"path": "/demoDiagnostics/nullResult/message", "equals": "Overlay failed: missing result"},
-      {"path": "/demoDiagnostics/modal/native/code", "equals": "unsupported_modal"},
-      {"path": "/version/ok", "equals": true},
-      {"path": "/version/stdout", "equals": "{\"protocol\":1,\"version\":\"0.1.0\"}\n"},
-      {"path": "/version/stderr", "equals": ""},
-      {"path": "/version/exitCode", "equals": 0},
-      {"path": "/version/value", "equals": {"protocol": 1, "version": "0.1.0"}},
-      {"path": "/screens/ok", "equals": true},
-      {"path": "/screens/exitCode", "equals": 0},
-      {"path": "/screens/stderr", "equals": ""},
-      {"path": "/screens/value/protocol", "equals": 1},
-      {"path": "/validate/ok", "equals": true},
-      {"path": "/validate/stdout", "equals": "{\"protocol\":1,\"valid\":true,\"width\":2,\"height\":2}\n"},
-      {"path": "/validate/stderr", "equals": ""},
-      {"path": "/validate/exitCode", "equals": 0},
-      {"path": "/asyncDone", "equals": true},
-      {"path": "/noTimeout", "equals": true},
-      {"path": "/noDefaultSafetyCap", "equals": true},
-      {"path": "/positiveTimeout", "equals": 3730},
-      {"path": "/pruned", "equals": true},
-      {"path": "/callbackCount", "equals": 5},
-      {"path": "/callbackResults", "length": 5, "each": [
-        {"path": "/ok", "equals": false},
-        {"path": "/value", "absent": true}
-      ]},
-      {"path": "/invalid/ok", "equals": false},
-      {"path": "/invalid/exitCode", "equals": 2},
-      {"path": "/invalid/stdout", "equals": ""},
-      {"path": "/invalid/error/code", "equals": "cli_error"},
-      {"path": "/invalid/stderr", "equals": "{\"protocol\":1,\"error\":{\"code\":\"invalid_arguments\",\"message\":\"mode must be passive or clickable\"}}\n"},
-      {"path": "/modal/ok", "equals": false},
-      {"path": "/modal/exitCode", "equals": 2},
-      {"path": "/modal/stdout", "equals": ""},
-      {"path": "/modal/error/code", "equals": "cli_error"},
-      {"path": "/modal/stderr", "equals": "{\"protocol\":1,\"error\":{\"code\":\"unsupported_modal\",\"message\":\"modal overlays are unsupported; use false\"}}\n"},
-      {"path": "/binary/ok", "equals": false},
-      {"path": "/binary/exitCode", "equals": 2},
-      {"path": "/binary/stdout", "equals": ""},
-      {"path": "/binary/error/code", "equals": "cli_error"},
-      {"path": "/binary/stderr", "equals": "{\"protocol\":1,\"error\":{\"code\":\"invalid_image\",\"message\":\"expected PNG with IHDR\"}}\n"},
-      {"path": "/cancelAccepted", "equals": true},
-      {"path": "/cancelProbe", "equals": "prelaunch"},
-      {"path": "/cancelRepeated", "equals": false},
-      {"path": "/cancelAfterDone", "equals": false},
-      {"path": "/cancelled/ok", "equals": false},
-      {"path": "/cancelled/cancelled", "equals": true},
-      {"path": "/cancelled/error/code", "equals": "cancelled"},
-      {"path": "/protocol/ok", "equals": false},
-      {"path": "/protocol/stdout", "equals": "not json"},
-      {"path": "/protocol/stderr", "equals": ""},
-      {"path": "/protocol/exitCode", "equals": 0},
-      {"path": "/protocol/error/code", "equals": "invalid_protocol"},
-      {"path": "/protocolTypes", "length": 2, "each": [
-        {"path": "/ok", "equals": false},
-        {"path": "/stderr", "equals": ""},
-        {"path": "/exitCode", "equals": 0},
-        {"path": "/error/code", "equals": "invalid_protocol"},
-        {"path": "/error/message", "equals": "Unsupported CLI protocol version"},
-        {"path": "/value", "absent": true}
-      ]},
-      {"path": "/protocolTypes/0/stdout", "equals": "{\"protocol\":true,\"message\":\"invalid\"}"},
-      {"path": "/protocolTypes/1/stdout", "equals": "{\"protocol\":false,\"message\":\"invalid\"}"},
-      {"path": "/protocolNull/ok", "equals": false},
-      {"path": "/protocolNull/stdout", "equals": "{\"protocol\":null,\"message\":\"invalid\"}"},
-      {"path": "/protocolNull/stderr", "equals": ""},
-      {"path": "/protocolNull/exitCode", "equals": 0},
-      {"path": "/protocolNull/error/code", "equals": "invalid_protocol"},
-      {"path": "/protocolNull/error/message", "equals": "Unsupported CLI protocol version"},
-      {"path": "/protocolNull/value", "absent": true},
-      {"path": "/protocolScalars", "length": 5, "each": [
-        {"path": "/ok", "equals": false},
-        {"path": "/stderr", "equals": ""},
-        {"path": "/exitCode", "equals": 0},
-        {"path": "/error/code", "equals": "invalid_protocol"},
-        {"path": "/error/message", "equals": "CLI response must be a JSON object"},
-        {"path": "/value", "absent": true}
-      ]},
-      {"path": "/protocolScalars/0/stdout", "equals": "true"},
-      {"path": "/protocolScalars/1/stdout", "equals": "false"},
-      {"path": "/protocolScalars/2/stdout", "equals": "null"},
-      {"path": "/protocolScalars/3/stdout", "equals": "1"},
-      {"path": "/protocolScalars/4/stdout", "equals": "[]"},
-      {"path": "/terminalTypes", "length": 8, "each": [
-        {"path": "/ok", "equals": false},
-        {"path": "/error/code", "equals": "invalid_protocol"},
-        {"path": "/value", "absent": true}
-      ]},
-      {"path": "/terminalCoordinates", "length": 6, "each": [
-        {"path": "/ok", "equals": false},
-        {"path": "/error/code", "equals": "invalid_protocol"},
-        {"path": "/value", "absent": true}
-      ]},
-      {"path": "/terminalFraming", "length": 7, "each": [
-        {"path": "/ok", "equals": false},
-        {"path": "/error/code", "equals": "invalid_protocol"},
-        {"path": "/value", "absent": true}
-      ]},
-      {"path": "/terminalDecoder", "length": 3, "each": [
-        {"path": "/ok", "equals": true},
-        {"path": "/stderr", "equals": ""},
-        {"path": "/exitCode", "equals": 0}
-      ]},
-      {"path": "/terminalDecoder/0/value", "equals": {"protocol": 1, "outcome": "accepted", "reason": "click", "x": 1.25, "y": 2}},
-      {"path": "/terminalDecoder/1/value", "equals": {"protocol": 1, "outcome": "accepted", "reason": "click", "x": 8192, "y": 2}},
-      {"path": "/terminalDecoder/2/value", "equals": {"protocol": 1, "outcome": "dismissed", "reason": "timeout"}},
-      {"path": "/nullOptions/ok", "equals": false},
-      {"path": "/nullOptions/error/code", "equals": "invalid_argument"},
-      {"path": "/nullShow/ok", "equals": false},
-      {"path": "/nullShow/error/code", "equals": "invalid_argument"},
-      {"path": "/nullShow/exitCode", "absent": true}
+      {
+        "path": "/demoDiagnostics/handlerRestored",
+        "equals": true
+      },
+      {
+        "path": "/demoDiagnostics/complexity/nativeUsed",
+        "equals": true
+      },
+      {
+        "path": "/demoDiagnostics/complexity/native/code",
+        "equals": "image_complexity"
+      },
+      {
+        "path": "/demoDiagnostics/complexity/message",
+        "equals": "image_complexity: clickable PNG exceeds 512 alpha-coverage rectangles\nWrapper: cli_error\nExit code: 2"
+      },
+      {
+        "path": "/demoDiagnostics/malformed/nativeUsed",
+        "equals": false
+      },
+      {
+        "path": "/demoDiagnostics/malformed/message",
+        "equals": "cli_error: helper failed\nStderr: not JSON\nExit code: 2"
+      },
+      {
+        "path": "/demoDiagnostics/malformed/result/stderr",
+        "equals": "not JSON"
+      },
+      {
+        "path": "/demoDiagnostics/invalidPayloads",
+        "length": 11,
+        "each": [
+          {
+            "path": "/nativeUsed",
+            "equals": false
+          },
+          {
+            "path": "/cancelled",
+            "equals": false
+          },
+          {
+            "path": "/message",
+            "matches": "cli_error: helper failed\\nStderr: [\\s\\S]+"
+          }
+        ]
+      },
+      {
+        "path": "/demoDiagnostics/cancelled/cancelled",
+        "equals": true
+      },
+      {
+        "path": "/demoDiagnostics/notCancelled",
+        "length": 4,
+        "each": [
+          {
+            "path": "/cancelled",
+            "equals": false
+          }
+        ]
+      },
+      {
+        "path": "/demoDiagnostics/prelaunch/message",
+        "equals": "missing_executable: Bundled CLI is missing"
+      },
+      {
+        "path": "/demoDiagnostics/prelaunch/result/exitCode",
+        "absent": true
+      },
+      {
+        "path": "/demoDiagnostics/invalidWrapper/message",
+        "equals": "unknown_error\nStderr: raw diagnostic"
+      },
+      {
+        "path": "/demoDiagnostics/nullResult/message",
+        "equals": "Overlay failed: missing result"
+      },
+      {
+        "path": "/demoDiagnostics/modal/native/code",
+        "equals": "unsupported_modal"
+      },
+      {
+        "path": "/version/ok",
+        "equals": true
+      },
+      {
+        "path": "/version/stdout",
+        "equals": "{\"protocol\":1,\"version\":\"0.1.1\"}\n"
+      },
+      {
+        "path": "/version/stderr",
+        "equals": ""
+      },
+      {
+        "path": "/version/exitCode",
+        "equals": 0
+      },
+      {
+        "path": "/version/value",
+        "equals": {
+          "protocol": 1,
+          "version": "0.1.1"
+        }
+      },
+      {
+        "path": "/screens/ok",
+        "equals": true
+      },
+      {
+        "path": "/screens/exitCode",
+        "equals": 0
+      },
+      {
+        "path": "/screens/stderr",
+        "equals": ""
+      },
+      {
+        "path": "/screens/value/protocol",
+        "equals": 1
+      },
+      {
+        "path": "/validate/ok",
+        "equals": true
+      },
+      {
+        "path": "/validate/stdout",
+        "equals": "{\"protocol\":1,\"valid\":true,\"width\":2,\"height\":2}\n"
+      },
+      {
+        "path": "/validate/stderr",
+        "equals": ""
+      },
+      {
+        "path": "/validate/exitCode",
+        "equals": 0
+      },
+      {
+        "path": "/asyncDone",
+        "equals": true
+      },
+      {
+        "path": "/noTimeout",
+        "equals": true
+      },
+      {
+        "path": "/noDefaultSafetyCap",
+        "equals": true
+      },
+      {
+        "path": "/positiveTimeout",
+        "equals": 3730
+      },
+      {
+        "path": "/pruned",
+        "equals": true
+      },
+      {
+        "path": "/callbackCount",
+        "equals": 5
+      },
+      {
+        "path": "/callbackResults",
+        "length": 5,
+        "each": [
+          {
+            "path": "/ok",
+            "equals": false
+          },
+          {
+            "path": "/value",
+            "absent": true
+          }
+        ]
+      },
+      {
+        "path": "/invalid/ok",
+        "equals": false
+      },
+      {
+        "path": "/invalid/exitCode",
+        "equals": 2
+      },
+      {
+        "path": "/invalid/stdout",
+        "equals": ""
+      },
+      {
+        "path": "/invalid/error/code",
+        "equals": "cli_error"
+      },
+      {
+        "path": "/invalid/stderr",
+        "equals": "{\"protocol\":1,\"error\":{\"code\":\"invalid_arguments\",\"message\":\"mode must be passive or clickable\"}}\n"
+      },
+      {
+        "path": "/modal/ok",
+        "equals": false
+      },
+      {
+        "path": "/modal/exitCode",
+        "equals": 2
+      },
+      {
+        "path": "/modal/stdout",
+        "equals": ""
+      },
+      {
+        "path": "/modal/error/code",
+        "equals": "cli_error"
+      },
+      {
+        "path": "/modal/stderr",
+        "equals": "{\"protocol\":1,\"error\":{\"code\":\"unsupported_modal\",\"message\":\"modal overlays are unsupported; use false\"}}\n"
+      },
+      {
+        "path": "/binary/ok",
+        "equals": false
+      },
+      {
+        "path": "/binary/exitCode",
+        "equals": 2
+      },
+      {
+        "path": "/binary/stdout",
+        "equals": ""
+      },
+      {
+        "path": "/binary/error/code",
+        "equals": "cli_error"
+      },
+      {
+        "path": "/binary/stderr",
+        "equals": "{\"protocol\":1,\"error\":{\"code\":\"invalid_image\",\"message\":\"expected PNG with IHDR\"}}\n"
+      },
+      {
+        "path": "/cancelAccepted",
+        "equals": true
+      },
+      {
+        "path": "/cancelProbe",
+        "equals": "prelaunch"
+      },
+      {
+        "path": "/cancelRepeated",
+        "equals": false
+      },
+      {
+        "path": "/cancelAfterDone",
+        "equals": false
+      },
+      {
+        "path": "/cancelled/ok",
+        "equals": false
+      },
+      {
+        "path": "/cancelled/cancelled",
+        "equals": true
+      },
+      {
+        "path": "/cancelled/error/code",
+        "equals": "cancelled"
+      },
+      {
+        "path": "/protocol/ok",
+        "equals": false
+      },
+      {
+        "path": "/protocol/stdout",
+        "equals": "not json"
+      },
+      {
+        "path": "/protocol/stderr",
+        "equals": ""
+      },
+      {
+        "path": "/protocol/exitCode",
+        "equals": 0
+      },
+      {
+        "path": "/protocol/error/code",
+        "equals": "invalid_protocol"
+      },
+      {
+        "path": "/protocolTypes",
+        "length": 2,
+        "each": [
+          {
+            "path": "/ok",
+            "equals": false
+          },
+          {
+            "path": "/stderr",
+            "equals": ""
+          },
+          {
+            "path": "/exitCode",
+            "equals": 0
+          },
+          {
+            "path": "/error/code",
+            "equals": "invalid_protocol"
+          },
+          {
+            "path": "/error/message",
+            "equals": "Unsupported CLI protocol version"
+          },
+          {
+            "path": "/value",
+            "absent": true
+          }
+        ]
+      },
+      {
+        "path": "/protocolTypes/0/stdout",
+        "equals": "{\"protocol\":true,\"message\":\"invalid\"}"
+      },
+      {
+        "path": "/protocolTypes/1/stdout",
+        "equals": "{\"protocol\":false,\"message\":\"invalid\"}"
+      },
+      {
+        "path": "/protocolNull/ok",
+        "equals": false
+      },
+      {
+        "path": "/protocolNull/stdout",
+        "equals": "{\"protocol\":null,\"message\":\"invalid\"}"
+      },
+      {
+        "path": "/protocolNull/stderr",
+        "equals": ""
+      },
+      {
+        "path": "/protocolNull/exitCode",
+        "equals": 0
+      },
+      {
+        "path": "/protocolNull/error/code",
+        "equals": "invalid_protocol"
+      },
+      {
+        "path": "/protocolNull/error/message",
+        "equals": "Unsupported CLI protocol version"
+      },
+      {
+        "path": "/protocolNull/value",
+        "absent": true
+      },
+      {
+        "path": "/protocolScalars",
+        "length": 5,
+        "each": [
+          {
+            "path": "/ok",
+            "equals": false
+          },
+          {
+            "path": "/stderr",
+            "equals": ""
+          },
+          {
+            "path": "/exitCode",
+            "equals": 0
+          },
+          {
+            "path": "/error/code",
+            "equals": "invalid_protocol"
+          },
+          {
+            "path": "/error/message",
+            "equals": "CLI response must be a JSON object"
+          },
+          {
+            "path": "/value",
+            "absent": true
+          }
+        ]
+      },
+      {
+        "path": "/protocolScalars/0/stdout",
+        "equals": "true"
+      },
+      {
+        "path": "/protocolScalars/1/stdout",
+        "equals": "false"
+      },
+      {
+        "path": "/protocolScalars/2/stdout",
+        "equals": "null"
+      },
+      {
+        "path": "/protocolScalars/3/stdout",
+        "equals": "1"
+      },
+      {
+        "path": "/protocolScalars/4/stdout",
+        "equals": "[]"
+      },
+      {
+        "path": "/terminalTypes",
+        "length": 8,
+        "each": [
+          {
+            "path": "/ok",
+            "equals": false
+          },
+          {
+            "path": "/error/code",
+            "equals": "invalid_protocol"
+          },
+          {
+            "path": "/value",
+            "absent": true
+          }
+        ]
+      },
+      {
+        "path": "/terminalCoordinates",
+        "length": 6,
+        "each": [
+          {
+            "path": "/ok",
+            "equals": false
+          },
+          {
+            "path": "/error/code",
+            "equals": "invalid_protocol"
+          },
+          {
+            "path": "/value",
+            "absent": true
+          }
+        ]
+      },
+      {
+        "path": "/terminalFraming",
+        "length": 7,
+        "each": [
+          {
+            "path": "/ok",
+            "equals": false
+          },
+          {
+            "path": "/error/code",
+            "equals": "invalid_protocol"
+          },
+          {
+            "path": "/value",
+            "absent": true
+          }
+        ]
+      },
+      {
+        "path": "/terminalDecoder",
+        "length": 3,
+        "each": [
+          {
+            "path": "/ok",
+            "equals": true
+          },
+          {
+            "path": "/stderr",
+            "equals": ""
+          },
+          {
+            "path": "/exitCode",
+            "equals": 0
+          }
+        ]
+      },
+      {
+        "path": "/terminalDecoder/0/value",
+        "equals": {
+          "protocol": 1,
+          "outcome": "accepted",
+          "reason": "click",
+          "x": 1.25,
+          "y": 2
+        }
+      },
+      {
+        "path": "/terminalDecoder/1/value",
+        "equals": {
+          "protocol": 1,
+          "outcome": "accepted",
+          "reason": "click",
+          "x": 8192,
+          "y": 2
+        }
+      },
+      {
+        "path": "/terminalDecoder/2/value",
+        "equals": {
+          "protocol": 1,
+          "outcome": "dismissed",
+          "reason": "timeout"
+        }
+      },
+      {
+        "path": "/nullOptions/ok",
+        "equals": false
+      },
+      {
+        "path": "/nullOptions/error/code",
+        "equals": "invalid_argument"
+      },
+      {
+        "path": "/nullShow/ok",
+        "equals": false
+      },
+      {
+        "path": "/nullShow/error/code",
+        "equals": "invalid_argument"
+      },
+      {
+        "path": "/nullShow/exitCode",
+        "absent": true
+      }
     ]
   },
   "execution": {
-    "successPaths": ["/fileArgument", "/folderArgument", "/renamedExecutable", "/validate"],
+    "successPaths": [
+      "/fileArgument",
+      "/folderArgument",
+      "/renamedExecutable",
+      "/validate"
+    ],
     "assertions": [
-      {"path": "/renamedExecutable", "equals": {"ok": true, "stdout": "{\"protocol\":1,\"version\":\"0.1.0\"}\n", "stderr": "", "exitCode": 0}},
-      {"path": "/fileRoundtrip", "equals": true},
-      {"path": "/folderRoundtrip", "equals": true},
-      {"path": "/textRoundtrips", "length": 5, "each": [
-        {"path": "/equal", "equals": true},
-        {"path": "/result/ok", "equals": true},
-        {"path": "/result/exitCode", "equals": 0},
-        {"path": "/result/stderr", "equals": ""}
-      ]},
-      {"path": "/missing/ok", "equals": false},
-      {"path": "/missing/error/code", "equals": "missing_executable"},
-      {"path": "/missing/exitCode", "absent": true},
-      {"path": "/unsupported/ok", "equals": false},
-      {"path": "/unsupported/error/code", "equals": "unsupported_architecture"},
-      {"path": "/unsupported/exitCode", "absent": true},
-      {"path": "/launch/ok", "equals": false},
-      {"path": "/launch/error/code", "equals": "launch_failed"},
-      {"path": "/launch/exitCode", "absent": true},
-      {"path": "/rejectedArguments", "length": 9, "each": [
-        {"path": "/result", "equals": {"ok": false, "error": {"code": "invalid_argument", "message": "Arguments must be Text, File or Folder"}}}
-      ]},
-      {"path": "/rejectedNul", "length": 3, "each": [
-        {"path": "", "equals": {"ok": false, "error": {"code": "invalid_argument", "message": "NUL is not permitted in process arguments"}}}
-      ]},
-      {"path": "/missingFile", "equals": {"ok": false, "error": {"code": "invalid_argument", "message": "Executable File and arguments Collection are required"}}},
-      {"path": "/missingArguments", "equals": {"ok": false, "error": {"code": "invalid_argument", "message": "Executable File and arguments Collection are required"}}}
+      {
+        "path": "/renamedExecutable",
+        "equals": {
+          "ok": true,
+          "stdout": "{\"protocol\":1,\"version\":\"0.1.1\"}\n",
+          "stderr": "",
+          "exitCode": 0
+        }
+      },
+      {
+        "path": "/fileRoundtrip",
+        "equals": true
+      },
+      {
+        "path": "/folderRoundtrip",
+        "equals": true
+      },
+      {
+        "path": "/textRoundtrips",
+        "length": 5,
+        "each": [
+          {
+            "path": "/equal",
+            "equals": true
+          },
+          {
+            "path": "/result/ok",
+            "equals": true
+          },
+          {
+            "path": "/result/exitCode",
+            "equals": 0
+          },
+          {
+            "path": "/result/stderr",
+            "equals": ""
+          }
+        ]
+      },
+      {
+        "path": "/missing/ok",
+        "equals": false
+      },
+      {
+        "path": "/missing/error/code",
+        "equals": "missing_executable"
+      },
+      {
+        "path": "/missing/exitCode",
+        "absent": true
+      },
+      {
+        "path": "/unsupported/ok",
+        "equals": false
+      },
+      {
+        "path": "/unsupported/error/code",
+        "equals": "unsupported_architecture"
+      },
+      {
+        "path": "/unsupported/exitCode",
+        "absent": true
+      },
+      {
+        "path": "/launch/ok",
+        "equals": false
+      },
+      {
+        "path": "/launch/error/code",
+        "equals": "launch_failed"
+      },
+      {
+        "path": "/launch/exitCode",
+        "absent": true
+      },
+      {
+        "path": "/rejectedArguments",
+        "length": 9,
+        "each": [
+          {
+            "path": "/result",
+            "equals": {
+              "ok": false,
+              "error": {
+                "code": "invalid_argument",
+                "message": "Arguments must be Text, File or Folder"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "path": "/rejectedNul",
+        "length": 3,
+        "each": [
+          {
+            "path": "",
+            "equals": {
+              "ok": false,
+              "error": {
+                "code": "invalid_argument",
+                "message": "NUL is not permitted in process arguments"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "path": "/missingFile",
+        "equals": {
+          "ok": false,
+          "error": {
+            "code": "invalid_argument",
+            "message": "Executable File and arguments Collection are required"
+          }
+        }
+      },
+      {
+        "path": "/missingArguments",
+        "equals": {
+          "ok": false,
+          "error": {
+            "code": "invalid_argument",
+            "message": "Executable File and arguments Collection are required"
+          }
+        }
+      }
     ]
   }
 }
